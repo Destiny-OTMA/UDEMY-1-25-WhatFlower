@@ -50,9 +50,9 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="MLf-T8-2UH">
-                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="5yt-qF-WiY">
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="8bK-f9-8G0">
                             <connections>
-                                <action selector="cameraButtonTapped:" destination="BYZ-38-t0r" id="Khv-kR-hb5"/>
+                                <action selector="cameraButtonTapped:" destination="BYZ-38-t0r" id="Roq-hN-jWs"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

@@ -7,37 +7,73 @@
 //
 
 import UIKit
+import CoreML
+import Vision
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
+  
   let imagePicker = UIImagePickerController()
   
   @IBOutlet weak var imageView: UIImageView!
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     
     imagePicker.delegate = self
     imagePicker.allowsEditing = true
     imagePicker.sourceType = .camera
+    
+  }
+  
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 
+    if let userPickedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {  // Let user pick an image
+
+      guard let convertedCIImage = CIImage(image: userPickedImage) else { // convert their image to a CIImage
+        fatalError("cannot convert to CIImage")
+      }
+
+      detect (image: convertedCIImage) // and pass the converted image into the method called detect
+
+      imageView.image = userPickedImage
+
+    }
+
+    imagePicker.dismiss(animated: true, completion: nil)
   }
 
-  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-    let userPickedImage = info[UIImagePickerController.InfoKey.editedImage]
+  
+  func detect(image: CIImage) {
     
-    imageView.image = userPickedImage as? UIImage
+    guard let model = try? VNCoreMLModel(for: FlowerClassifier().model) else {
+      
+      fatalError("cannot import model")
+      
+    }
     
-    imagePicker.dismiss(animated: true, completion: nil)
-    
+    let request = VNCoreMLRequest(model: model) { (request, error) in
+      let classification = request.results?.first as? VNClassificationObservation
+      
+      self.navigationItem.title = classification?.identifier.capitalized
+
+    }
+  
+  let handler = VNImageRequestHandler(ciImage: image)
+  
+  do {
+  try handler.perform([request])
+  }
+  
+  catch {
+    print(error)
+  }
+  
   }
   
   @IBAction func cameraButtonTapped(_ sender: UIBarButtonItem) {
-    
     present(imagePicker, animated: true, completion: nil)
     
   }
-  
-  
+
 } // This is the end of the ViewController Class Statement
 
